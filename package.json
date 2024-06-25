@@ -1,7 +1,17 @@
 {
   "name": "koishi-plugin-douyin",
   "description": "koishi plugin for douyin",
-  "version": "0.0.1",
+  "author": {
+    "name": "TEDIORELEE",
+    "email": "tediorelee@gmail.com",
+    "url": "https://github.com/tediorelee"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tediorelee/koishi-plugin-douyin.git"
+  },
+  "private": false,
+  "version": "0.0.2",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "files": [
@@ -13,9 +23,18 @@
   "keywords": [
     "chatbot",
     "koishi",
-    "plugin"
+    "plugin",
+    "douyin"
   ],
-  "devDependencies": {},
+  "koishi": {
+    "description": {
+      "en": "Koishi plugin for douyin",
+      "zh": "识别群聊中的抖音分享链接"
+    }
+  },
+  "devDependencies": {
+    "@koishijs/client": "^5.29.1"
+  },
   "peerDependencies": {
     "koishi": "^4.17.8"
   }
