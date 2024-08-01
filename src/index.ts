@@ -36,7 +36,14 @@ export function apply(ctx: Context, config: Config) {
       const cover = result.data.cover || '';
 
       if (type === "视频") {
-        session.send(h.video(result.data.url))
+        const videoBuffer = await ctx.http.get<ArrayBuffer>(result.data.url, {
+          responseType: 'arraybuffer',
+        });
+        session.send(h.video(videoBuffer, 'video/mp4'))
+      }  else if (type === "图文") {
+        result.data.images.forEach(async item => {
+          session.send(h.image(item))
+        })
       }
     } catch(err) {
       console.log(err);

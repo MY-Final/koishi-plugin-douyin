@@ -8,10 +8,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/tediorelee/koishi-plugin-douyin.git"
+    "url": "git+https://github.com/tediorelee/koishi-plugin-douyin"
   },
   "private": false,
-  "version": "0.0.2",
+  "version": "0.0.4",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "files": [
