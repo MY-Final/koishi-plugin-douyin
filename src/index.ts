@@ -2,24 +2,28 @@ import { Context, Schema, h, segment } from 'koishi'
 import { resolve } from 'path'
 import {} from '@koishijs/plugin-console'
 
-export const name = 'xiaohongshu'
+export const name = 'douyin'
 
 export interface Config {
-  apikey: string;
+  host: string,
+  key: string
 }
 
 export const Config = Schema.object({
-  description: Schema.string().default('api参考, 可按量购买').description('https://shorturl.at/2rATh'),
-  apikey: Schema.string().default('').required().description('填写douyin解析的apikey'),
+  host: Schema.string().default('douyin-media-downloader.p.rapidapi.com').description('不需要做任何改动'),
+  key: Schema.string().default('').description('填写从rapidapi获取的key'),
+  description: Schema.string().default('api主页：https://rapidapi.com/FarhanAliOfficial/api/douyin-media-downloader').description(''),
 })
-
-export const api = 'https://api.mu-jie.cc/douyin'
 
 export function apply(ctx: Context, config: Config) {
 
-  async function fetchFromAPI(url) {
-    return await ctx.http.get(`${api}?url=${url}&key=${config.apikey}`);
-  };
+  async function getVideoDetail(url: string) {
+    const headers = {
+      'X-RapidAPI-Key': config.key,
+      'X-RapidAPI-Host': config.host
+    };
+    return await ctx.http.get('https://' + config.host + '/?url=' + url, { headers });
+  }
 
   ctx.middleware(async (session, next) => {
     if (!session.content.includes('douyin.com')) return next()
@@ -28,22 +32,28 @@ export function apply(ctx: Context, config: Config) {
     if (!url) return
 
     try {
-      const result = await fetchFromAPI(url);
-      if (result.code !== 200) {
+      const result = await getVideoDetail(url);
+      if (result.status !== 'success') {
         return '解析失败!';
       }
-      const type = result.data.type
-      const cover = result.data.cover || '';
+      const {
+        data: {
+          thumbnail,
+          download_links
+        },
+      } = result;
 
-      if (type === "视频") {
-        const videoBuffer = await ctx.http.get<ArrayBuffer>(result.data.url, {
+      const HDVideoUrl = download_links.find(item => item.label === "Download MP4 HD")?.url;
+      if (HDVideoUrl) {
+        const videoBuffer = await ctx.http.get<ArrayBuffer>(HDVideoUrl, {
           responseType: 'arraybuffer',
         });
         session.send(h.video(videoBuffer, 'video/mp4'))
-      }  else if (type === "图文") {
-        result.data.images.forEach(async item => {
-          session.send(h.image(item))
-        })
+      } else {
+        session.send('没找到可下载的视频！')
+        setTimeout(() => {
+          session.send(h.image(thumbnail))
+        }, 500)
       }
     } catch(err) {
       console.log(err);
