@@ -5,25 +5,19 @@ import {} from '@koishijs/plugin-console'
 export const name = 'douyin'
 
 export interface Config {
-  host: string,
-  key: string
+  apiHost: string
 }
 
 export const Config = Schema.object({
-  host: Schema.string().default('douyin-media-downloader.p.rapidapi.com').description('不需要做任何改动'),
-  key: Schema.string().default('').description('填写从rapidapi获取的key'),
-  description: Schema.string().default('api主页：https://rapidapi.com/FarhanAliOfficial/api/douyin-media-downloader').description(''),
+  apiHost: Schema.string().default('http://192.168.2.167:16252').description('填写你的API前缀'),
+  description: Schema.string().default('考虑到解析速度+请求次数, 更换解析API为[Douyin_TikTok_Download_API], 部署参考地址：https://github.com/Evil0ctal/Douyin_TikTok_Download_API/blob/main/README.md').description(''),
 })
 
 export function apply(ctx: Context, config: Config) {
 
-  async function getVideoDetail(url: string) {
-    const headers = {
-      'X-RapidAPI-Key': config.key,
-      'X-RapidAPI-Host': config.host
-    };
-    return await ctx.http.get('https://' + config.host + '/?url=' + url, { headers });
-  }
+  async function getVideoDetailMinimal(url: string) {
+    return await ctx.http.get(config.apiHost + '/api/hybrid/video_data?url=' + url + '&minimal=true');
+  };
 
   ctx.middleware(async (session, next) => {
     if (!session.content.includes('douyin.com')) return next()
@@ -32,28 +26,33 @@ export function apply(ctx: Context, config: Config) {
     if (!url) return
 
     try {
-      const result = await getVideoDetail(url);
-      if (result.status !== 'success') {
-        return '解析失败!';
+      const response = await getVideoDetailMinimal(url);
+      if (response.code !== 200) {
+        return '解析失败! 该链接或许不支持';
       }
       const {
         data: {
-          thumbnail,
-          download_links
-        },
-      } = result;
+          desc,
+          image_data
+        }
+      } = response;
 
-      const HDVideoUrl = download_links.find(item => item.label === "Download MP4 HD")?.url;
-      if (HDVideoUrl) {
-        const videoBuffer = await ctx.http.get<ArrayBuffer>(HDVideoUrl, {
+      const isTypeImage = image_data && Object.keys(image_data).length > 0;
+      session.send('抖音解析内容：\n' + desc);
+      if (isTypeImage) {
+        // 下载图片
+        const {
+          no_watermark_image_list
+        } = image_data;
+        no_watermark_image_list.forEach(async item => {
+          await session.send(h('img', { src: item }))
+        });
+      } else {
+        // 下载视频
+        const videoBuffer = await ctx.http.get<ArrayBuffer>(config.apiHost + '/api/download?url=' + url + '&prefix=true&with_watermark=true', {
           responseType: 'arraybuffer',
         });
         session.send(h.video(videoBuffer, 'video/mp4'))
-      } else {
-        session.send('没找到可下载的视频！')
-        setTimeout(() => {
-          session.send(h.image(thumbnail))
-        }, 500)
       }
     } catch(err) {
       console.log(err);
