@@ -33,7 +33,8 @@ export function apply(ctx: Context, config: Config) {
       const {
         data: {
           desc,
-          image_data
+          image_data,
+          music
         }
       } = response;
 
@@ -49,14 +50,26 @@ export function apply(ctx: Context, config: Config) {
         });
       } else {
         // 下载视频
-        const videoBuffer = await ctx.http.get<ArrayBuffer>(config.apiHost + '/api/download?url=' + url + '&prefix=true&with_watermark=true', {
-          responseType: 'arraybuffer',
-        });
-        session.send(h.video(videoBuffer, 'video/mp4'))
+        const videoDuration = music && music.video_duration
+        if (videoDuration > 60) {
+          // 发送预览图
+          const {
+            data: {
+              cover_data: coverData
+            }
+          } = response;
+          await session.send('视频过长~ 请打开抖音客户端查看');
+          await session.send(h('img', { src: coverData?.dynamic_cover?.url_list[0] }))
+        } else {
+          const videoBuffer = await ctx.http.get<ArrayBuffer>(config.apiHost + '/api/download?url=' + url + '&prefix=true&with_watermark=true', {
+            responseType: 'arraybuffer',
+          });
+          session.send(h.video(videoBuffer, 'video/mp4'))
+        }
       }
     } catch(err) {
       console.log(err);
-      return `发生错误!;  ${err}`;
+      return `发生错误! 请重试; ${err}`;
     }
   });
 
