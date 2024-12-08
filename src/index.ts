@@ -5,11 +5,13 @@ import {} from '@koishijs/plugin-console'
 export const name = 'douyin'
 
 export interface Config {
-  apiHost: string
+  apiHost: string,
+  maxDuration: string
 }
 
 export const Config = Schema.object({
   apiHost: Schema.string().default('http://192.168.2.167:16252').description('填写你的API前缀'),
+  maxDuration: Schema.string().default('90').description('允许下载的最大视频长度(秒)，否则仅发送预览图，避免bot卡住'),
   description: Schema.string().default('考虑到解析速度+请求次数, 更换解析API为[Douyin_TikTok_Download_API], 部署参考地址：https://github.com/Evil0ctal/Douyin_TikTok_Download_API/blob/main/README.md').description(''),
 })
 
@@ -39,7 +41,7 @@ export function apply(ctx: Context, config: Config) {
       } = response;
 
       const isTypeImage = image_data && Object.keys(image_data).length > 0;
-      session.send('抖音解析内容：\n' + desc);
+      await session.send('抖音解析内容：\n' + desc);
       if (isTypeImage) {
         // 下载图片
         const {
@@ -51,7 +53,7 @@ export function apply(ctx: Context, config: Config) {
       } else {
         // 下载视频
         const videoDuration = music && music.video_duration
-        if (videoDuration > 60) {
+        if (videoDuration > config.maxDuration) {
           // 发送预览图
           const {
             data: {
