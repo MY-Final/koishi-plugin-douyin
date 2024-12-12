@@ -52,7 +52,7 @@ export function apply(ctx: Context, config: Config) {
         });
       } else {
         // 下载视频
-        const videoDuration = music && music.video_duration
+        const videoDuration = music && music.duration
         if (videoDuration > config.maxDuration) {
           // 发送预览图
           const {
