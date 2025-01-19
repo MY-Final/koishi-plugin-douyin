@@ -1,6 +1,4 @@
 import { Context, Schema, h, segment } from 'koishi'
-import { resolve } from 'path'
-import {} from '@koishijs/plugin-console'
 
 export const name = 'douyin'
 
@@ -74,11 +72,4 @@ export function apply(ctx: Context, config: Config) {
       return `发生错误! 请重试; ${err}`;
     }
   });
-
-  ctx.inject(['console'], (ctx) => {
-    ctx.console.addEntry({
-      dev: resolve(__dirname, '../client/index.ts'),
-      prod: resolve(__dirname, '../dist'),
-    })
-  })
 }
