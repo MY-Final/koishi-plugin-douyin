@@ -39,15 +39,23 @@ export function apply(ctx: Context, config: Config) {
       } = response;
 
       const isTypeImage = image_data && Object.keys(image_data).length > 0;
-      await session.send('抖音解析内容：\n' + desc);
+      await session.send('抖音解析：\n' + desc);
       if (isTypeImage) {
         // 下载图片
         const {
           no_watermark_image_list
         } = image_data;
-        no_watermark_image_list.forEach(async item => {
-          await session.send(h('img', { src: item }))
-        });
+        if (no_watermark_image_list.length > 3) {
+          const forwardMessages = await Promise.all(no_watermark_image_list.map(async (item) => {
+            return h('img', { src: item })
+          }));
+          const forwardMessage = h('message', { forward: true, children: forwardMessages });
+          await session.send(forwardMessage);
+        } else {
+          no_watermark_image_list.forEach(async item => {
+            await session.send(h('img', { src: item }))
+          });
+        }
       } else {
         // 下载视频
         const videoDuration = music && music.duration
