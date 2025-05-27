@@ -15,7 +15,7 @@
     "url": "git+https://github.com/MY-Final/koishi-plugin-douyin.git"
   },
   "private": false,
-  "version": "0.1.2",
+  "version": "0.1.4",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "files": [
