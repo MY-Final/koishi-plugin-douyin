@@ -1,14 +1,14 @@
 import { Context, Schema, h, segment, Logger } from 'koishi'
 
-export const name = 'douyin'
+export const name = 'douyin-myfinal'
 
 // 创建插件专用的日志记录器
-const logger = new Logger('douyin')
+const logger = new Logger('douyin-myfinal')
 
 export const usage = `
 ## 抖音链接解析插件
 
-> 原插件作者: [Lipraty](https://github.com/Lipraty/)
+> 原插件作者: [tediorelee](https://github.com/tediorelee)
 >
 > 版本: 添加了自定义回复模板、日志
 
