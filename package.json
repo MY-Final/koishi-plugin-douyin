@@ -1,17 +1,21 @@
 {
-  "name": "koishi-plugin-douyin",
-  "description": "koishi plugin for douyin",
+  "name": "koishi-plugin-douyin-myfinal",
+  "description": "抖音链接解析插件,本来想加一点点东西的，后来看了一圈发现没得加，原插件koishi-plugin-douyin",
   "author": {
-    "name": "TEDIORELEE",
-    "email": "tediorelee@gmail.com",
-    "url": "https://github.com/tediorelee"
+    "name": "final"
   },
+  "contributors": [
+    {
+      "name": "final",
+      "email": "3486159271@qq.com"
+    }
+  ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/tediorelee/koishi-plugin-douyin"
+    "url": "git+https://github.com/MY-Final/koishi-plugin-douyin.git"
   },
   "private": false,
-  "version": "0.0.13",
+  "version": "0.1.2",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "files": [
@@ -19,21 +23,27 @@
     "dist"
   ],
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "build": "tsc"
+  },
   "keywords": [
     "chatbot",
     "koishi",
     "plugin",
-    "douyin"
+    "douyin",
+    "tiktok",
+    "video",
+    "template"
   ],
   "koishi": {
     "description": {
-      "en": "Koishi plugin for douyin",
-      "zh": "识别群聊中的抖音分享链接"
+      "en": "Douyin link parser with custom templates and logging",
+      "zh": "抖音链接解析插件，支持自定义回复模板和日志功能"
     }
   },
   "devDependencies": {
-    "@koishijs/client": "^5.29.1"
+    "@koishijs/client": "^5.29.1",
+    "typescript": "^5.8.3"
   },
   "peerDependencies": {
     "koishi": "^4.17.8"
