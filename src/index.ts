@@ -56,7 +56,7 @@ export interface Config {
 }
 
 export const Config = Schema.object({
-  apiHost: Schema.string().default('http://192.168.2.167:16252').description('填写你的API前缀'),
+  apiHost: Schema.string().default('http://192.168.2.167:16252').description('填写你的API前缀，不要有斜杠最后'),
   maxDuration: Schema.string().default('90').description('允许下载的最大视频长度(秒)，否则仅发送预览图，避免bot卡住'),
   replyTemplate: Schema.string().default('抖音解析：\n{desc}').description('自定义回复模板，可用变量：{desc}, {nickname}, {type}, {digg_count}, {comment_count}, {share_count}, {collect_count}, {duration}, {signature}').role('textarea'),
   longVideoTemplate: Schema.string().default('视频过长~ 请打开抖音客户端查看').description('视频过长时的提示文本').role('textarea'),
